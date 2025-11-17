@@ -33,9 +33,23 @@ const Navbar = () => {
   return (
     <nav className="flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 border-b border-gray-300 bg-white relative transition-all">
 
-      <NavLink to='/' onClick={()=> setOpen(false)}>
-        <img className="h-9" src={assets.logo} alt="logo" />
-      </NavLink>
+<NavLink 
+  to="/" 
+  onClick={() => setOpen(false)} 
+  className="flex items-center justify-center"
+>
+  <img
+    src={assets.CartLogo}
+    alt="OrgCart Logo"
+    className="h-14 md:h-16 lg:h-20 object-contain scursor-pointer transition-all duration-300 hover:scale-105 hover:drop-shadow-lg"
+    style={{
+      marginTop: "-2px",
+      background: "none",     // ensures no background color
+    }}
+  />
+</NavLink>
+
+
 
       <div className="hidden sm:flex items-center gap-8">
         <NavLink to='/'>Home</NavLink>
