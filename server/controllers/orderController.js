@@ -102,7 +102,7 @@ export const placeOrderStripe = async (req, res) => {
 // ======================
 // STRIPE WEBHOOK
 // ======================
-export  const stripeWebhooks = async (req, res) => {
+export const stripeWebhooks = async (req, res) => {
   const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
   const sig = req.headers["stripe-signature"];
   let event;
@@ -111,26 +111,33 @@ export  const stripeWebhooks = async (req, res) => {
     event = stripeInstance.webhooks.constructEvent(
       req.body,
       sig,
-      process.env.STRIPE_WEBHOOK_SECRET
+      process.env.STRIPE_WEBHOOKS_SECRET   // correct env name
     );
   } catch (error) {
     return res.status(400).send(`Webhook Error: ${error.message}`);
   }
 
   switch (event.type) {
-    case "payment_intent.succeeded": {
+    case "checked.session.completed": {
       const paymentIntent = event.data.object;
       const paymentIntentId = paymentIntent.id;
 
-      const session = await stripeInstance.checkout.sessions.list({
+      const sessions = await stripeInstance.checkout.sessions.list({
         payment_intent: paymentIntentId,
       });
 
-      const { orderId, userId } = session.data[0].metadata;
+      const session = sessions.data[0];
+      const { orderId, userId } = session.metadata;
 
-      // ✅ FIXED method names
-      await Order.findByIdAndUpdate(orderId, { isPaid: true });
+      // ⭐ VERY IMPORTANT FIX ⭐
+      await Order.findByIdAndUpdate(orderId, {
+        isPaid: true,
+        paymentType: "Online",
+        status: "Order Placed"
+      });
+
       await User.findByIdAndUpdate(userId, { cartItems: {} });
+
       break;
     }
 
@@ -138,22 +145,24 @@ export  const stripeWebhooks = async (req, res) => {
       const paymentIntent = event.data.object;
       const paymentIntentId = paymentIntent.id;
 
-      const session = await stripeInstance.checkout.sessions.list({
+      const sessions = await stripeInstance.checkout.sessions.list({
         payment_intent: paymentIntentId,
       });
 
-      const { orderId } = session.data[0].metadata;
+      const session = sessions.data[0];
+      const { orderId } = session.metadata;
+
       await Order.findByIdAndDelete(orderId);
       break;
     }
 
     default:
-      console.error(`Unhandled event type ${event.type}`);
-      break;
+      console.log(`Unhandled webhook event: ${event.type}`);
   }
 
   res.json({ received: true });
 };
+
 
 // ======================
 // GET USER ORDERS
