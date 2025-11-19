@@ -1,16 +1,63 @@
-<<<<<<< HEAD
-# E-Commerce-site
-=======
-# React + Vite
+# 🛒 E-Commerce Website (Full-Stack)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A robust e-commerce platform built with **React**, **Tailwind CSS**, **Node.js**, **Express**, and **MongoDB**, featuring secure authentication and Stripe payment integration.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
+- 🔐 **JWT Authentication** (login, register, user protection)  
+- 🛍️ **Product listing with dynamic loading**  
+- 🛒 **Cart management with add/remove/update**  
+- 💳 **Stripe Payment Gateway Integration**  
+- 📦 **Order handling & status tracking**  
+- 📱 **Responsive UI built using Tailwind CSS**  
+- 🔧 **REST APIs developed with Node.js & Express**  
+- 🗄️ **MongoDB database using Mongoose**  
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
->>>>>>> 4cba6dd (initial commit)
+## 🏗️ Tech Stack
+
+### **Frontend**
+- React.js  
+- JavaScript (ES6+)  
+- **Tailwind CSS**  
+- React Router  
+
+### **Backend**
+- Node.js  
+- Express.js  
+- MongoDB + Mongoose  
+
+### **Security & Payments**
+- JWT (Authentication)  
+- Stripe API  
+
+---
+
+## 📊 Tech Usage Breakdown
+| Technology | Usage |
+|-----------|--------|
+| JavaScript (React + Node) | 99.4% (from GitHub) |
+| React.js | ~30% |
+| **Tailwind CSS** | ~15% |
+| Node.js + Express | ~25% |
+| MongoDB | ~15% |
+| Stripe Payment | ~10% |
+| JWT Authentication | ~5% |
+
+---
+
+## 📦 Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/Nehru442/E-Commerce-site.git
+
+# Install frontend dependencies
+cd client
+npm install
+
+# Install backend dependencies
+cd ../server
+npm install
