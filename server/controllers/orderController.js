@@ -120,27 +120,18 @@ export const stripeWebhooks = async (req, res) => {
 
   // Use the session object directly
   if (event.type === "checkout.session.completed") {
-    const session = event.data.object;
-    const { orderId, userId } = session.metadata || {};
+  const session = event.data.object;
+  const { orderId, userId } = session.metadata;
 
-    try {
-      if (orderId) {
-        await Order.findByIdAndUpdate(orderId, {
-          isPaid: true,
-          paymentType: "Online",
-          status: "Order Placed",
-        });
-      }
+  await Order.findByIdAndUpdate(orderId, {
+    isPaid: true,
+    paymentType: "Online",
+    status: "Order Placed"
+  });
 
-      if (userId) {
-        await User.findByIdAndUpdate(userId, { cartItems: {} });
-      }
+  await User.findByIdAndUpdate(userId, { cartItems: {} });
+}
 
-    } catch (err) {
-      console.error("Error updating order / clearing cart:", err);
-      // don't return error to Stripe — still ack so Stripe doesn't retry indefinitely
-    }
-  }
 
   // handle failed payments optionally
   if (event.type === "payment_intent.payment_failed") {
