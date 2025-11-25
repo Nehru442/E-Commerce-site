@@ -23,7 +23,8 @@ app.post('/stripe' , express.raw({type: "application/json"}), stripeWebhooks)
 // ✅ Allow frontend origin with credentials
 const allowedOrigins = [
   "http://localhost:5173",   // React dev
-  "http://127.0.0.1:5173"    // Just in case you open via 127.0.0.1
+  "http://127.0.0.1:5173" ,
+  "https://orgcart.vercel.app"   // Just in case you open via 127.0.0.1
 ];
 
 app.use(express.json());
