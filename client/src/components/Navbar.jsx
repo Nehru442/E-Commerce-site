@@ -33,24 +33,16 @@ const Navbar = () => {
   return (
     <nav className="flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 border-b border-gray-300 bg-white relative transition-all">
 
-<NavLink 
-  to="/" 
-  onClick={() => setOpen(false)} 
-  className="flex items-center justify-center"
->
+<NavLink to="/"  onClick={() => setOpen(false)}   className="flex items-center justify-center">
+  <div className="bg-transparent p-1 rounded-lg transition-all duration-300 hover:bg-green-600 hover:shadow-lg">
   <img
     src={assets.CartLogo}
     alt="OrgCart Logo"
-    className="h-14 md:h-16 lg:h-20 object-contain scursor-pointer transition-all duration-300 hover:scale-105 hover:drop-shadow-lg"
-    style={{
-      marginTop: "-2px",
-      background: "none",     // ensures no background color
-    }}
+    className="h-14 md:h-16 lg:h-20 object-contain cursor-pointer transition-all duration-300 hover:scale-110"
   />
+</div>
+
 </NavLink>
-
-
-
       <div className="hidden sm:flex items-center gap-8">
         <NavLink to='/'>Home</NavLink>
         <NavLink to='/products'>All Product</NavLink>

@@ -15,16 +15,13 @@ export const placeOrderCOD = async (req, res) => {
       return res.json({ success: false, message: "Invalid address or items data" });
     }
 
-    // calculate total amount
     let amount = await items.reduce(async (acc, item) => {
       const product = await Product.findById(item.product);
       return (await acc) + product.offerPrice * item.quantity;
     }, 0);
 
-    // Add Tax 2%
-    amount += Math.floor(amount * 0.02);
+    amount = Math.round(amount * 1.02); // Add 2% tax
 
-    // ✅ FIXED — use model "Order" (not "orders")
     await Order.create({ userId, items, amount, address, paymentType: "COD" });
 
     res.json({ success: true, message: "Order placed successfully" });
@@ -47,37 +44,39 @@ export const placeOrderStripe = async (req, res) => {
     }
 
     let productData = [];
+    let amount = 0;
 
-    let amount = await items.reduce(async (acc, item) => {
+    for (const item of items) {
       const product = await Product.findById(item.product);
+
       productData.push({
         name: product.name,
         price: product.offerPrice,
         quantity: item.quantity,
       });
-      return (await acc) + product.offerPrice * item.quantity;
-    }, 0);
 
-    // Add Tax 2%
-    unit_amount : Math.round((items.price + items.price * 0.02) * 100) ;
+      amount += product.offerPrice * item.quantity;
+    }
 
-    // ✅ FIXED — use different variable name (order)
+    amount = Math.round(amount * 1.02); // Add 2% tax
+
     const order = await Order.create({
       userId,
       items,
       amount,
       address,
       paymentType: "Online",
+      isPaid: false,
+      status: "Pending",
     });
 
-    // stripe payment initialization
     const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 
     const line_items = productData.map((item) => ({
       price_data: {
         currency: "usd",
         product_data: { name: item.name },
-        unit_amount: Math.floor(item.price + item.price * 0.02) * 100,
+        unit_amount: Math.round(item.price * 1.02 * 100), // price * tax in cents
       },
       quantity: item.quantity,
     }));
@@ -118,53 +117,31 @@ export const stripeWebhooks = async (req, res) => {
     return res.status(400).send(`Webhook Error: ${error.message}`);
   }
 
-  // Use the session object directly
   if (event.type === "checkout.session.completed") {
-  const session = event.data.object;
-  const { orderId, userId } = session.metadata;
+    const session = event.data.object;
+    const { orderId, userId } = session.metadata;
 
-  await Order.findByIdAndUpdate(orderId, {
-    isPaid: true,
-    paymentType: "Online",
-    status: "Order Placed"
-  });
-
-  await User.findByIdAndUpdate(userId, { cartItems: {} });
-}
-
-
-  // handle failed payments optionally
-  if (event.type === "payment_intent.payment_failed") {
-    const paymentIntent = event.data.object;
-    const paymentIntentId = paymentIntent.id;
-
-    // Optionally find and delete the order linked to this payment
     try {
-      const sessions = await stripeInstance.checkout.sessions.list({
-        payment_intent: paymentIntentId,
+      await Order.findByIdAndUpdate(orderId, {
+        isPaid: true,
+        paymentType: "Online",
+        status: "Order Placed",
       });
-      const session = sessions.data[0];
-      const { orderId } = session?.metadata || {};
-      if (orderId) {
-        await Order.findByIdAndDelete(orderId);
-      }
-    } catch (err) {
-      console.error("Error handling payment_failed:", err);
+
+      await User.findByIdAndUpdate(userId, { cartItems: {} }); // Clear cart
+    } catch (error) {
+      console.error("Webhook DB update error:", error);
     }
   }
 
   res.json({ received: true });
 };
 
-
-
-
 // ======================
 // GET USER ORDERS
 // ======================
 export const getUserOrders = async (req, res) => {
   try {
-    // ✅ FIXED
     const userId = req.userId;
 
     const orders = await Order.find({
@@ -185,7 +162,6 @@ export const getUserOrders = async (req, res) => {
 // ======================
 export const getAllOrders = async (req, res) => {
   try {
-    // ✅ FIXED — use Order model, not "orders"
     const orders = await Order.find({
       $or: [{ paymentType: "COD" }, { isPaid: true }],
     }).populate("items.product address");
