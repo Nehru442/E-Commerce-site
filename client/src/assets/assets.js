@@ -1,5 +1,4 @@
 import logo from "./logo.svg";
-import Cart from "./cart.jpeg";
 import OrgCart_Logo from "./OrgCart_Logo.png";
 import LogoCart from "./LogoCart.png";
 import CartLogo from "./CartLogo.png";
@@ -13,7 +12,7 @@ import nav_cart_icon from "./nav_cart_icon.svg";
 import add_icon from "./add_icon.svg";
 import refresh_icon from "./refresh_icon.svg";
 import product_list_icon from "./product_list_icon.svg";
-import order_icon from "./order_icon.svg";
+import order_icon from "./order_icon.svg";   
 import upload_area from "./upload_area.png";
 import profile_icon from "./profile_icon.png";
 import menu_icon from "./menu_icon.svg";
@@ -79,7 +78,6 @@ export const assets = {
   OrgCart_Logo,
   LogoCart,
   CartLogo,
-  Cart,
   search_icon,
   remove_icon,
   arrow_right_icon_colored,
