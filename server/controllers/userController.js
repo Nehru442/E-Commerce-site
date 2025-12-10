@@ -82,7 +82,7 @@ export const login = async (req, res) => {
     return res.json({
       success: true,
       message: "Login successful",
-      user: { name: user.name, email: user.email },
+      user: { name: user.name, email: user.email , cartItems: user.cartItems},
     });
   } catch (error) {
     console.log(error.message);
@@ -91,38 +91,33 @@ export const login = async (req, res) => {
 };
 
 // ------------------- IS AUTH -------------------
+
 export const isAuth = async (req, res) => {
   try {
     const userId = req.userId;
-
     if (!userId) {
-      return res.json({ success: false, message: "Unauthorized" });
+      return res.status(401).json({ success: false, message: "Not Authorized" });
     }
 
     const user = await User.findById(userId).select("-password");
-
-    if (!user) {
-      return res.json({ success: false, message: "User not found" });
-    }
-
     return res.json({ success: true, user });
   } catch (error) {
-    console.log(error.message);
     return res.json({ success: false, message: error.message });
   }
 };
 
-// ------------------- LOGOUT -------------------
 export const logout = async (req, res) => {
   try {
-    res.clearCookie("token", cookieOptions);
+    const isProd = process.env.NODE_ENV === "production";
 
-    return res.json({
-      success: true,
-      message: "Logged out successfully",
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
     });
+
+    return res.json({ success: true, message: "Logged out successfully" });
   } catch (error) {
-    console.log(error.message);
     return res.json({ success: false, message: error.message });
   }
 };

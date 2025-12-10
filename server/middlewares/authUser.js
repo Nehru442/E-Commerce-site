@@ -19,7 +19,7 @@ const authUser = (req, res, next) => {
     }
 
     req.userId = decoded.id;
-    return next();
+     next();
   } catch (error) {
     return res
       .status(401)
