@@ -4,8 +4,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
  
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
-
+axios.defaults.baseURL = '/'
 // Attach token to headers if available
 const token = localStorage.getItem("sellerToken");
 if (token) {
