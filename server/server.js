@@ -25,7 +25,8 @@ app.post('/stripe' , express.raw({type: "application/json"}), stripeWebhooks)
 // ✅ Allow frontend origin with credentials
 const allowedOrigins = [
   "http://localhost:5173",   // React dev
-  "https://orgcart.vercel.app"  
+  "https://orgcart.vercel.app",
+  "https://orgcart-backend.vercel.app"  
 ];
 
 app.use(express.json());
@@ -33,16 +34,12 @@ app.use(cookieParser());
 
 // ✅ More flexible CORS setup
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, Postman)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      return callback(new Error("Not allowed by CORS"));
-    }
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true); // allow Postman, mobile
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error("Not allowed by CORS"));
   },
-  credentials: true,
+  credentials: true
 }));
 
 // ✅ Routes
