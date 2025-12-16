@@ -21,19 +21,23 @@ const Login = () => {
     const payload =
       state === "register" ? { name, email, password } : { email, password };
 
-    const { data } = await axios.post(endpoint, payload, {
-      withCredentials: true,   // 🔥 important
-    });
+   const { data } = await axios.post(`/api/user/${state}`, {
+  name,
+  email,
+  password
+});
 
-    if (data.success) {
-    localStorage.setItem("userToken", data.token);
+if (data.success) {
+  localStorage.setItem("token", data.token); // 🔑 REQUIRED
+  axios.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
+
   setUser(data.user);
   setShowUserLogin(false);
   navigate("/");
-  } else {
-      toast.error(data.message);
-    }
-  } catch (error) {
+} else {
+  toast.error(data.message);
+ }
+}catch (error) {
     toast.error(error.message);
   }
 };
