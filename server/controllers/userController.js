@@ -18,35 +18,34 @@ export const register = async (req, res) => {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
-      return res.json({ success: false, message: "Missing required fields" });
+      return res.json({ success: false, message: 'Missing required fields' });
     }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.json({ success: false, message: "User already exists" });
+      return res.json({ success: false, message: 'User already exists' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({ name, email, password: hashedPassword });
 
-    const user = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-    });
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
-
-    res.cookie("token", token, cookieOptions);
-
+    // ✅ SEND TOKEN IN RESPONSE (NOT COOKIE)
     return res.json({
       success: true,
-      message: "User registered successfully",
-      user: { name: user.name, email: user.email },
+      token,
+      user: {
+        name: user.name,
+        email: user.email
+      }
     });
+
   } catch (error) {
-    console.log(error.message);
     return res.json({ success: false, message: error.message });
   }
 };
@@ -57,10 +56,7 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.json({
-        success: false,
-        message: "Email and password are required",
-      });
+      return res.json({ success: false, message: "Email and password are required" });
     }
 
     const user = await User.findOne({ email });
@@ -73,19 +69,23 @@ export const login = async (req, res) => {
       return res.json({ success: false, message: "Invalid email or password" });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
 
-    res.cookie("token", token, cookieOptions);
-
+    // ✅ SEND TOKEN IN RESPONSE
     return res.json({
       success: true,
-      message: "Login successful",
-      user: { name: user.name, email: user.email , cartItems: user.cartItems},
+      token,
+      user: {
+        name: user.name,
+        email: user.email
+      }
     });
+
   } catch (error) {
-    console.log(error.message);
     return res.json({ success: false, message: error.message });
   }
 };

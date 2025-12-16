@@ -26,10 +26,11 @@ const Login = () => {
     });
 
     if (data.success) {
-      navigate("/");
-      setUser(data.user);
-      setShowUserLogin(false);
-    } else {
+    localStorage.setItem("userToken", data.token);
+  setUser(data.user);
+  setShowUserLogin(false);
+  navigate("/");
+  } else {
       toast.error(data.message);
     }
   } catch (error) {
