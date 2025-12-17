@@ -36,14 +36,16 @@ export const register = async (req, res) => {
     );
 
     // ✅ SEND TOKEN IN RESPONSE (NOT COOKIE)
+   res.cookie("token", token, cookieOptions);
+
     return res.json({
       success: true,
-      token,
       user: {
         name: user.name,
         email: user.email
       }
     });
+
 
   } catch (error) {
     return res.json({ success: false, message: error.message });
@@ -75,15 +77,16 @@ export const login = async (req, res) => {
       { expiresIn: '7d' }
     );
 
-    // ✅ SEND TOKEN IN RESPONSE
+    res.cookie("token", token, cookieOptions);
+
     return res.json({
       success: true,
-      token,
       user: {
         name: user.name,
         email: user.email
       }
     });
+
 
   } catch (error) {
     return res.json({ success: false, message: error.message });

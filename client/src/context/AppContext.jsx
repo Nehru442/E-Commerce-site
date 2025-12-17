@@ -3,15 +3,10 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
  
-axios.defaults.withCredentials = false;
+axios.defaults.withCredentials = true ;
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL || '/';
 // Attach token to headers if available
-const token = localStorage.getItem("userToken");
-
-if (token) {
-  axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-}
-
+   
 
 export const AppContext = createContext();
 
