@@ -64,11 +64,16 @@ export const AppContextProvider = ({ children }) => {
 
   // ✅ Cart Actions
   const addToCart = (itemId) => {
-    const cartData = { ...cartItems };
-    cartData[itemId] = (cartData[itemId] || 0) + 1;
-    setCartItems(cartData);
-    toast.success("Added to Cart");
-  };
+  const product = products.find(p => p._id === itemId);
+
+  if (!product?.inStock) {
+    return toast.error("Product is out of stock");
+  }
+
+  const cartData = { ...cartItems };
+  cartData[itemId] = (cartData[itemId] || 0) + 1;
+  setCartItems(cartData);
+};
 
   const updateCartItem = (itemId, quantity) => {
     const cartData = { ...cartItems, [itemId]: quantity };

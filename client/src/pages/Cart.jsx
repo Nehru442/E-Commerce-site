@@ -152,7 +152,19 @@ const Cart = () => {
                 <div className="mb-6">
                     <p className="text-sm font-medium uppercase">Delivery Address</p>
                     <div className="relative flex justify-between items-start mt-2">
-                        <p className="text-gray-500">{selectedAddress ? `${selectedAddress.street}, ${selectedAddress.city}, ${selectedAddress.state}, ${selectedAddress.country}` : "No address found"}</p>
+                        <p className="text-gray-500 text-sm">{selectedAddress ? (
+                                        <>
+                                        {selectedAddress.firstName} {selectedAddress.lastName}<br />
+                                        {selectedAddress.street},<br />
+                                        {selectedAddress.city}, {selectedAddress.state} - {selectedAddress.zipcode}<br />
+                                        {selectedAddress.country}<br />
+                                        Phone: {selectedAddress.phone}
+                                        </>
+                                    ) : (
+                                        "No address found"
+                                    )}
+                                    </p>
+
                         <button onClick={() => setShowAddress(!showAddress)} className="text-primary hover:underline cursor-pointer">
                             Change
                         </button>
