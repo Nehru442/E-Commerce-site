@@ -23,13 +23,21 @@ export const AppContextProvider = ({ children }) => {
 
   // ✅ Fetch Seller Auth Status
   const fetchSeller = async () => {
-    const token = localStorage.getItem("sellerToken");
-    if (!token) return setIsSeller(false);
+   const token = localStorage.getItem("userToken");
+
+if (token) {
+  axios.defaults.headers.common["Authorization"] =
+    `Bearer ${token}`;
+}
+
 
     try {
-      const { data } = await axios.get("/api/seller/is-auth", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const { data } = await axios.get("/api/user/is-auth", {
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem("userToken")}`
+  }
+});
+
       setIsSeller(data.success);
     } catch (error) {
       console.warn("Seller session expired");
