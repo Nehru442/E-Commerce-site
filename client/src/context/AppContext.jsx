@@ -23,7 +23,7 @@ export const AppContextProvider = ({ children }) => {
 
   // ✅ Fetch Seller Auth Status
   const fetchSeller = async () => {
-   const token = localStorage.getItem("userToken");
+  const token = localStorage.getItem("userToken");
 
 if (token) {
   axios.defaults.headers.common["Authorization"] =
@@ -34,7 +34,7 @@ if (token) {
     try {
       const { data } = await axios.get("/api/user/is-auth", {
   headers: {
-    Authorization: `Bearer ${localStorage.getItem("userToken")}`
+    Authorization: `Bearer ${localStorage.getItem("userToken")}` 
   }
 });
 

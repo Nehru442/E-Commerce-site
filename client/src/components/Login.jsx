@@ -22,18 +22,16 @@ const Login = () => {
       const payload =
         state === "register"
           ? { name, email, password }
-          : { email, password };
+          : { email, password }; 
 
       const { data } = await axios.post(url, payload);
 
       if (data.success) {
         // ✅ STORE TOKEN CORRECTLY
         localStorage.setItem("userToken", data.token);
+axios.defaults.headers.common["Authorization"] =
+  `Bearer ${data.token}`;
 
-        // ✅ ATTACH TOKEN TO ALL FUTURE REQUESTS
-        axios.defaults.headers.common[
-          "Authorization"
-        ] = `Bearer ${data.token}`;
 
         // ✅ SET USER STATE
         setUser(data.user);
