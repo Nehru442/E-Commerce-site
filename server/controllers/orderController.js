@@ -144,18 +144,19 @@ export const getUserOrders = async (req, res) => {
   try {
     const userId = req.userId;
 
-    const orders = await Order.find({
-      userId,
-      $or: [{ paymentType: "COD" }, { isPaid: true }],
-    })
-      .populate("items.product address")
-      .sort({ createdAt: -1 });
+    const orders = await Order.find({ userId })
+      .populate("items.product");
 
-    res.json({ success: true, orders });
+    res.json({
+      success: true,
+      orders,   // <-- plural
+    });
+
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
 };
+
 
 // ======================
 // GET ALL ORDERS (ADMIN)

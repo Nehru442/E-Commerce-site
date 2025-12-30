@@ -3,7 +3,6 @@ import { useAppContext } from "../context/AppContext";
 import { assets, dummyAddress } from "../assets/assets";
 import toast from "react-hot-toast";
 
-
 const Cart = () => {
     const {products, currency, cartItems, removeFromCart, getCartCount, updateCartItem, navigate, getCartAmount, axios, user, setCartItems} = useAppContext()
     const [cartArray, setCartArray] = useState([])
@@ -19,68 +18,65 @@ const Cart = () => {
             product.quantity = cartItems[key]
             tempArray.push(product)
         }
-        setCartArray(tempArray) 
-    } 
-
-      const getUserAddress = async () => {
-            try {
-                const { data } = await axios.get("/api/address/get", { withCredentials: true });
-                if (data.success) {
-                setAddresses(data.addresses);
-                if (data.addresses.length > 0) {
-                    setSelectedAddress(data.addresses[0]);
-                }
-                } else {
-                toast.error(data.message);
-                }
-              } catch (error) {
-                toast.error(error.message);
-                }
-              };
-
-
-  const placeOrder = async () => {
-  try {
-    if (!selectedAddress || !selectedAddress._id) {
-      return toast.error("Please select an address before placing an order");
+        setCartArray(tempArray)
     }
 
-    const orderPayload = {
-      items: cartArray.map((item) => ({
-        product: item._id,
-        quantity: item.quantity,
-      })),
-      address: selectedAddress._id,
-    };
-
-    if (paymentOption === "COD") {
-      const { data } = await axios.post("/api/order/cod", orderPayload, {
-        withCredentials: true,
-      });
-
-      if (data.success) {
-        toast.success(data.message);
-        setCartItems({});
-        navigate("/my-orders");
-      } else {
-        toast.error(data.message);
-      }
-    } else {
-      const { data } = await axios.post("/api/order/stripe", orderPayload, {
-        withCredentials: true,
-      });
-
-      if (data.success) {
-        window.location.replace(data.url);
-      } else {
-        toast.error(data.message);
-      }
+    const getUserAddress = async ()=>{
+        try {
+            const {data} = await axios.get('/api/address/get');
+            if (data.success){
+                setAddresses(data.addresses)
+                if(data.addresses.length > 0){
+                    setSelectedAddress(data.addresses[0])
+                }
+            }else{
+                toast.error(data.message)
+            }
+            
+        } catch (error) {
+            toast.error(error.message)
+        }
     }
-  } catch (error) {
-    toast.error(error.message);
-  }
-};
 
+    const placeOrder = async ()=>{
+        try {
+            if(!selectedAddress){
+                return toast.error("Please select an address")
+            }
+
+            // Place Order with COD
+            if(paymentOption === "COD"){
+                const {data} = await axios.post('/api/order/cod', {
+                    userId: user._id,
+                    items: cartArray.map(item=> ({product: item._id, quantity: item.quantity})),
+                    address: selectedAddress._id
+                })
+
+                if(data.success){
+                    toast.success(data.message)
+                    setCartItems({})
+                    navigate('/my-orders')
+                }else{
+                    toast.error(data.message)
+                }
+            }else{
+                // Place Order with Stripe
+                const {data} = await axios.post('/api/order/stripe', {
+                    userId: user._id,
+                    items: cartArray.map(item=> ({product: item._id, quantity: item.quantity})),
+                    address: selectedAddress._id
+                })
+
+                if(data.success){
+                    window.location.replace(data.url)
+                }else{
+                    toast.error(data.message)
+                }
+            }
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
 
     useEffect(()=>{
         if(products.length > 0 && cartItems){
@@ -152,19 +148,7 @@ const Cart = () => {
                 <div className="mb-6">
                     <p className="text-sm font-medium uppercase">Delivery Address</p>
                     <div className="relative flex justify-between items-start mt-2">
-                        <p className="text-gray-500 text-sm">{selectedAddress ? (
-                                        <>
-                                        {selectedAddress.firstName} {selectedAddress.lastName}<br />
-                                        {selectedAddress.street},<br />
-                                        {selectedAddress.city}, {selectedAddress.state} - {selectedAddress.zipcode}<br />
-                                        {selectedAddress.country}<br />
-                                        Phone: {selectedAddress.phone}
-                                        </>
-                                    ) : (
-                                        "No address found"
-                                    )}
-                                    </p>
-
+                        <p className="text-gray-500">{selectedAddress ? `${selectedAddress.street}, ${selectedAddress.city}, ${selectedAddress.state}, ${selectedAddress.country}` : "No address found"}</p>
                         <button onClick={() => setShowAddress(!showAddress)} className="text-primary hover:underline cursor-pointer">
                             Change
                         </button>
