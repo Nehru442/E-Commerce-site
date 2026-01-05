@@ -22,42 +22,49 @@ export const AppContextProvider = ({ children }) => {
   const [searchQuery, setSearchQuery] = useState({});
 
   // ✅ Fetch Seller Auth Status
-  const fetchSeller = async () => {
-   const token = localStorage.getItem("userToken");
+ const fetchSeller = async () => {
+  try {
+    const token = localStorage.getItem("sellerToken");
 
-if (token) {
-  axios.defaults.headers.common["Authorization"] =
-    `Bearer ${token}`;
-}
-
-
-    try {
-      const { data } = await axios.get("/api/user/is-auth", {
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem("userToken")}`
-  }
-});
-
-      setIsSeller(data.success);
-    } catch (error) {
-      console.warn("Seller session expired");
-      localStorage.removeItem("sellerToken");
+    if (!token) {
       setIsSeller(false);
+      return;
     }
-  };
+
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+    const { data } = await axios.get("/api/seller/is-auth");
+
+    setIsSeller(data.success);
+  } catch (error) {
+    setIsSeller(false);
+    localStorage.removeItem("sellerToken");
+  }
+};
+
+
 
   // ✅ Fetch User Auth + Cart
-  const fetchUser = async () => {
-    try {
-      const { data } = await axios.get("/api/user/is-auth");
-      if (data.success) {
-        setUser(data.user);
-        setCartItems(data.user.cartItems || {});
-      }
-    } catch {
-      setUser(null);
+ const fetchUser = async () => {
+  try {
+    const token = localStorage.getItem("userToken");
+
+    if (!token) return;
+
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+    const { data } = await axios.get("/api/user/is-auth");
+
+    if (data.success) {
+      setUser(data.user);
+      setCartItems(data.user.cartItems || {});
     }
-  };
+  } catch {
+    setUser(null);
+    localStorage.removeItem("userToken");
+  }
+};
+
 
   // ✅ Fetch All Products
   const fetchProducts = async () => {

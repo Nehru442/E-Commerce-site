@@ -7,6 +7,7 @@ import {
   getUserOrders,
   getAllOrders,
 } from "../controllers/orderController.js";
+import authSeller from "../middlewares/authSeller.js";
 
 const router = express.Router();
 
@@ -20,6 +21,6 @@ router.post(
 );
 
 router.get("/user", authUser, getUserOrders);
-router.get("/seller", getAllOrders);
+router.get("/seller",authSeller, getAllOrders);
 
 export default router;

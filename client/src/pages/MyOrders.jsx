@@ -55,11 +55,12 @@ const MyOrders = () => {
                                                 {item.product ? (
                         <>
                             <div className='bg-primary/10 p-4 rounded-lg'>
-                            <img
-                                src={item.product.image?.[0]}
-                                alt={item.product.name}
-                                className='w-16 h-16'
-                            />
+                                                            <img
+                                  src={item?.product?.image?.[0] || "/placeholder.png"}
+                                  alt=""
+                                  className="w-16 h-16"
+                                />
+
                             </div>
                             <div className='ml-4'>
                             <h2 className='text-xl font-medium text-gray-800'>

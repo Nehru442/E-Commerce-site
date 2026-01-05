@@ -14,7 +14,7 @@ const ProductList = () => {
       { id, inStock },
       {
         headers: {
-          Authorization: `Bearer ${sellerToken}`
+          Authorization: `Bearer ${sellerToken}`  
         }
       }
     );
